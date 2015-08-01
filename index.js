@@ -93,16 +93,15 @@ SassCompiler.prototype._getIncludePaths = function(path) {
 SassCompiler.prototype._nativeCompile = function(source, callback) {
   libsass.render({
     data: source.data,
-    success: (function(data) {
-      if('css' in data) data = data.css;
-      callback(null, data);
-    }),
-    error: (function(error) {
-      callback(error.message || util.inspect(error));
-    }),
     includePaths: this._getIncludePaths(source.path),
     outputStyle: 'nested',
     sourceComments: !this.optimize
+  }, function(err, data) {
+    if (err) {
+      callback(error.message || util.inspect(error));
+    } else {
+      callback(null, data.css.toString());
+    }
   });
 };
 
